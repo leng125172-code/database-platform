@@ -7,6 +7,5 @@ health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{
 docker exec dcfsSqlServer bash -ec '
   tool=$(command -v sqlcmd || true)
   [[ -n "$tool" ]] || tool=/opt/mssql-tools18/bin/sqlcmd
-  "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SET NOCOUNT ON; SELECT SERVERPROPERTY(''ProductVersion''), SERVERPROPERTY(''Edition'');" -W -s "|" -b
+  "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SET NOCOUNT ON; SELECT @@VERSION;" -W -b
 '
-
