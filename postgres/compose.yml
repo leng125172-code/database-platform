@@ -37,8 +37,6 @@ services:
       - log_timezone=Asia/Shanghai
       - -c
       - log_min_duration_statement=-1
-    ports:
-      - "${BIND_IP}:${POSTGRES_PORT}:5432"
     volumes:
       - ${NVME_DATA_ROOT}/postgres/data:/var/lib/postgresql
       - ${HDD_DATA_ROOT}/postgres/backup:/backup
@@ -65,3 +63,4 @@ services:
 networks:
   backend:
     name: dcfsDbPostgres
+    internal: true

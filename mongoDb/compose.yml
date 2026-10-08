@@ -16,8 +16,6 @@ services:
       - --bind_ip_all
       - --wiredTigerCacheSizeGB
       - "8"
-    ports:
-      - "${BIND_IP}:${MONGODB_PORT}:27017"
     volumes:
       - ${NVME_DATA_ROOT}/mongoDb/data:/data/db
       - ${NVME_DATA_ROOT}/mongoDb/logs:/data/configdb
@@ -45,3 +43,4 @@ services:
 networks:
   backend:
     name: dcfsDbMongoDb
+    internal: true

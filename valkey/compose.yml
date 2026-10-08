@@ -13,8 +13,6 @@ services:
       - /bin/sh
       - -ec
       - exec valkey-server --bind 0.0.0.0 --protected-mode yes --requirepass "$$VALKEY_PASSWORD" --appendonly yes --appendfsync everysec --aof-use-rdb-preamble yes --auto-aof-rewrite-percentage 100 --auto-aof-rewrite-min-size 64mb --save 900 1 --save 300 10 --maxmemory "${VALKEY_MAXMEMORY}" --maxmemory-policy allkeys-lru
-    ports:
-      - "${BIND_IP}:${VALKEY_PORT}:6379"
     volumes:
       - ${NVME_DATA_ROOT}/valkey/data:/data
       - ${HDD_DATA_ROOT}/valkey/backup:/backup
@@ -42,3 +40,4 @@ services:
 networks:
   backend:
     name: dcfsCacheGeneral
+    internal: true

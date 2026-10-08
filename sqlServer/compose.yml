@@ -12,8 +12,6 @@ services:
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_MEMORY_LIMIT_MB: ${MSSQL_MEMORY_LIMIT_MB}
       TZ: ${TZ}
-    ports:
-      - "${BIND_IP}:${MSSQL_PORT}:1433"
     volumes:
       - ${NVME_DATA_ROOT}/sqlServer/data:/var/opt/mssql/data
       - ${NVME_DATA_ROOT}/sqlServer/logs:/var/opt/mssql/log
@@ -41,3 +39,4 @@ services:
 networks:
   backend:
     name: dcfsDbSqlServer
+    internal: true

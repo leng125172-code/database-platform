@@ -10,8 +10,6 @@ services:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_AUTO_UPGRADE: "0"
       TZ: ${TZ}
-    ports:
-      - "${BIND_IP}:${MARIADB_PORT}:3306"
     volumes:
       - ${NVME_DATA_ROOT}/mariaDb/data:/var/lib/mysql
       - ${HDD_DATA_ROOT}/mariaDb/backup:/backup
@@ -39,3 +37,4 @@ services:
 networks:
   backend:
     name: dcfsDbMariaDb
+    internal: true
