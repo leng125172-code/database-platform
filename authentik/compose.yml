@@ -16,7 +16,6 @@ x-authentik-service: &authentik-service
   restart: unless-stopped
   env_file:
     - .env
-    - ../.authentik.env
   environment: *authentik-environment
   shm_size: 512mb
   security_opt:

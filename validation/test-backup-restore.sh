@@ -4,6 +4,8 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 set -a
 # shellcheck disable=SC1091
+. "$repo_root/.images.env"
+# shellcheck disable=SC1091
 . "$repo_root/.env"
 set +a
 stamp=$(date +%Y%m%d_%H%M%S)

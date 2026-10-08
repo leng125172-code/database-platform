@@ -4,20 +4,24 @@ set -euo pipefail
 instance_dir=$(cd "$(dirname "${BASH_SOURCE[1]}")/.." && pwd)
 repo_root=$(cd "$instance_dir/.." && pwd)
 env_file="$repo_root/.env"
+images_env="$repo_root/.images.env"
 compose_file="$instance_dir/compose.yml"
 
 require_env() {
+  [[ -r "$images_env" ]] || { echo "Missing $images_env" >&2; exit 1; }
   [[ -r "$env_file" ]] || { echo "Missing $env_file" >&2; exit 1; }
 }
 
 compose() {
   require_env
-  docker compose --env-file "$env_file" -f "$compose_file" "$@"
+  docker compose --env-file "$images_env" --env-file "$env_file" -f "$compose_file" "$@"
 }
 
 load_env() {
   require_env
   set -a
+  # shellcheck disable=SC1090
+  . "$images_env"
   # shellcheck disable=SC1090
   . "$env_file"
   set +a

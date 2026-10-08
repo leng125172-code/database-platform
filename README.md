@@ -11,9 +11,20 @@ This repository deploys six independent database/cache stacks and the internal A
 | Valkey | 9.1.2 | `valkey:6379` on `dcfsCacheGeneral` | `/dataNvme/DockerData/valkey` | `/data/DockerData/valkey/backup` |
 | Valkey compatibility | 7.2.14 | `valkey72:6379` on `dcfsCacheValkey72` | `/dataNvme/DockerData/valkey72` | `/data/DockerData/valkey72/backup` |
 
-All image references include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. Runtime secrets use stack-specific `.env` files with mode `0600` and are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data. Valkey 9 remains the default general-purpose instance; Valkey 7.2 is an isolated compatibility instance for applications whose supported matrix has not reached the current major release.
+All image references are centralized in the repository-root `.images.env` and include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. The root `.env` contains database/cache runtime settings and secrets, while `authentik/.env` contains all Authentik runtime settings and its dedicated PostgreSQL credentials. Real environment files are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data. Valkey 9 remains the default general-purpose instance; Valkey 7.2 is an isolated compatibility instance for applications whose supported matrix has not reached the current major release.
 
 Authentik 2026.8.3 reuses PostgreSQL 18.6 with a dedicated database and least-privilege role. Its HTTP endpoint is available only as `http://authentik:9000` on the internal `dcfsAppAuthentik` network. The unused TLS listener is restricted to container loopback, and no host port is published. The future Dashboard/reverse proxy can join this network without gaining access to the PostgreSQL network.
+
+## Environment files
+
+| File | Responsibility |
+| --- | --- |
+| `/.images.env` | Every deployed container image tag and immutable digest, including Authentik |
+| `/.env` | Shared paths plus database/cache credentials and resource limits |
+| `/authentik/.env` | Authentik secret, storage/resource settings, and its dedicated PostgreSQL credentials |
+
+Do not put image variables in either runtime `.env`. Compose wrappers always load `.images.env` first and the relevant runtime file second.
+`scripts/check-env-layout.sh` enforces this separation and rejects the retired root `.authentik.env` layout.
 
 Container output uses Docker's `local` logging driver with five 20 MiB segments per container and compression. SQL Server error logs are cycled daily, MariaDB slow/general logs are off by default, MariaDB binlogs expire after three days, and `check-all.sh` fails when either storage tier reaches 85% usage.
 

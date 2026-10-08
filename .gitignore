@@ -1,3 +1,4 @@
+# Real environment files. This includes .images.env and stack-local .env files.
 **/.env
 **/.*.env
 !**/.env.example
@@ -11,4 +12,3 @@ secrets/
 **/*.swo
 **/*~
 .DS_Store
-

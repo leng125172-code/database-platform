@@ -3,6 +3,10 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 failed=0
+echo '== environment layout =='
+if ! "$repo_root/scripts/check-env-layout.sh"; then
+  failed=1
+fi
 echo '== storage =='
 df -h /dataNvme /data
 for path in /dataNvme /data; do

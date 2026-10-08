@@ -13,9 +13,9 @@ This stack runs Authentik 2026.8.3 as the internal identity provider. It reuses 
 
 ## Secrets and storage
 
-- `authentik/.env` stores the image setting and Authentik secret key.
-- `/.authentik.env` stores only Authentik's dedicated PostgreSQL connection credentials.
-- Both real files are generated on the workstation with mode `0600` and are ignored by Git.
+- `/.images.env` stores the Authentik image alongside every other deployed image reference.
+- `authentik/.env` stores the Authentik secret key, runtime settings, and its dedicated PostgreSQL connection credentials.
+- The real Authentik environment file is generated on the workstation with mode `0600` and is ignored by Git.
 - PostgreSQL data stays on NVMe through the existing database stack.
 - Authentik files and their archives use `/data/DockerData/authentik/{data,backup}` on HDD.
 - Container logs use five compressed 10 MiB local-driver segments per container.

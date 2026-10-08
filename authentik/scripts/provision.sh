@@ -4,34 +4,31 @@ set -euo pipefail
 instance_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 repo_root=$(cd "$instance_dir/.." && pwd)
 app_env="$instance_dir/.env"
-database_env="$repo_root/.authentik.env"
 cluster_env="$repo_root/.env"
+images_env="$repo_root/.images.env"
 
 [[ -r "$cluster_env" ]] || { echo "Missing $cluster_env" >&2; exit 1; }
+[[ -r "$images_env" ]] || { echo "Missing $images_env" >&2; exit 1; }
 [[ -r "$instance_dir/.env.example" ]] || { echo "Missing Authentik environment template" >&2; exit 1; }
-[[ -r "$repo_root/.authentik.env.example" ]] || { echo "Missing Authentik database template" >&2; exit 1; }
 
 umask 077
 if [[ ! -e "$app_env" ]]; then
   cp "$instance_dir/.env.example" "$app_env"
   secret_key=$(openssl rand -hex 48)
-  sed -i "s|<generate-a-long-random-secret>|$secret_key|" "$app_env"
-  echo "Created $app_env with mode 0600; the secret was not printed."
-fi
-
-if [[ ! -e "$database_env" ]]; then
-  cp "$repo_root/.authentik.env.example" "$database_env"
   database_password=$(openssl rand -hex 32)
-  sed -i "s|<generate-a-strong-password>|$database_password|" "$database_env"
-  echo "Created $database_env with mode 0600; the password was not printed."
+  sed -i \
+    -e "s|<generate-a-long-random-secret>|$secret_key|" \
+    -e "s|<generate-a-strong-password>|$database_password|" \
+    "$app_env"
+  echo "Created $app_env with mode 0600; secrets were not printed."
 fi
-chmod 600 "$app_env" "$database_env"
+chmod 600 "$app_env"
 
 set -a
 # shellcheck disable=SC1090
 . "$cluster_env"
 # shellcheck disable=SC1090
-. "$database_env"
+. "$app_env"
 set +a
 
 [[ "${AUTHENTIK_POSTGRESQL__HOST}" == "postgres" ]] || { echo "Unexpected PostgreSQL host" >&2; exit 1; }

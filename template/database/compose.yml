@@ -1,6 +1,6 @@
 services:
   database:
-    image: ${IMAGE}
+    image: ${DATABASE_IMAGE}
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     volumes:
@@ -12,4 +12,3 @@ services:
 networks:
   backend:
     internal: true
-

@@ -4,14 +4,21 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 env_file="$repo_root/.env"
 example_file="$repo_root/.env.example"
+images_env="$repo_root/.images.env"
+images_example="$repo_root/.images.env.example"
 
 if [[ -e "$env_file" ]]; then
   echo "Refusing to overwrite existing $env_file" >&2
   exit 1
 fi
+if [[ -e "$images_env" ]]; then
+  echo "Refusing to overwrite existing $images_env" >&2
+  exit 1
+fi
 
 umask 077
 cp "$example_file" "$env_file"
+cp "$images_example" "$images_env"
 
 sql_password="Aa9!$(openssl rand -hex 24)"
 postgres_password=$(openssl rand -hex 32)
@@ -30,4 +37,5 @@ sed -i \
   "$env_file"
 
 chmod 600 "$env_file"
-echo "Created $env_file with mode 0600; secrets were not printed."
+chmod 0644 "$images_env"
+echo "Created $env_file with mode 0600 and $images_env with mode 0644; secrets were not printed."
