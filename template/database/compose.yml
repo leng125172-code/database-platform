@@ -1,0 +1,15 @@
+services:
+  database:
+    image: ${IMAGE}
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    volumes:
+      - ${NVME_DATA_ROOT}/${CONTAINER_NAME}/data:/var/lib/database
+      - ${HDD_DATA_ROOT}/${CONTAINER_NAME}/backup:/backup
+    networks:
+      - backend
+
+networks:
+  backend:
+    internal: true
+

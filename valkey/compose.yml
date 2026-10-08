@@ -1,0 +1,44 @@
+name: dcfs_valkey
+
+services:
+  valkey:
+    image: ${VALKEY_IMAGE}
+    container_name: dcfsValkey
+    hostname: valkey
+    restart: unless-stopped
+    environment:
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD}
+      TZ: ${TZ}
+    command:
+      - /bin/sh
+      - -ec
+      - exec valkey-server --bind 0.0.0.0 --protected-mode yes --requirepass "$$VALKEY_PASSWORD" --appendonly yes --appendfsync everysec --aof-use-rdb-preamble yes --auto-aof-rewrite-percentage 100 --auto-aof-rewrite-min-size 64mb --save 900 1 --save 300 10 --maxmemory "${VALKEY_MAXMEMORY}" --maxmemory-policy allkeys-lru
+    ports:
+      - "${BIND_IP}:${VALKEY_PORT}:6379"
+    volumes:
+      - ${NVME_DATA_ROOT}/valkey/data:/data
+      - ${HDD_DATA_ROOT}/valkey/backup:/backup
+    cpus: ${VALKEY_CPU_LIMIT}
+    mem_limit: ${VALKEY_MEMORY_LIMIT}
+    sysctls:
+      net.core.somaxconn: 1024
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli --no-auth-warning -a \"$$VALKEY_PASSWORD\" ping | grep -qx PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    logging:
+      driver: local
+      options:
+        max-size: 20m
+        max-file: "5"
+        compress: "true"
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: dcfsCacheGeneral

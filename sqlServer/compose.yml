@@ -1,0 +1,43 @@
+name: dcfs_sqlserver
+
+services:
+  sqlserver:
+    image: ${MSSQL_IMAGE}
+    container_name: dcfsSqlServer
+    hostname: sqlserver
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_MEMORY_LIMIT_MB: ${MSSQL_MEMORY_LIMIT_MB}
+      TZ: ${TZ}
+    ports:
+      - "${BIND_IP}:${MSSQL_PORT}:1433"
+    volumes:
+      - ${NVME_DATA_ROOT}/sqlServer/data:/var/opt/mssql/data
+      - ${NVME_DATA_ROOT}/sqlServer/logs:/var/opt/mssql/log
+      - ${HDD_DATA_ROOT}/sqlServer/backup:/var/opt/mssql/backup
+    cpus: ${MSSQL_CPU_LIMIT}
+    mem_limit: ${MSSQL_MEMORY_LIMIT}
+    shm_size: 1gb
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "tool=$$(command -v sqlcmd || true); [ -n \"$$tool\" ] || tool=/opt/mssql-tools18/bin/sqlcmd; $$tool -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    logging:
+      driver: local
+      options:
+        max-size: 20m
+        max-file: "5"
+        compress: "true"
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: dcfsDbSqlServer

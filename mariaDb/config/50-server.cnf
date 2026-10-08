@@ -1,0 +1,17 @@
+[mariadb]
+bind-address = 0.0.0.0
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+skip-name-resolve
+max_connections = 200
+innodb_buffer_pool_size = 8G
+innodb_log_file_size = 1G
+innodb_flush_method = O_DIRECT
+innodb_flush_log_at_trx_commit = 1
+sync_binlog = 1
+log_bin = mariadb-bin
+binlog_format = ROW
+max_binlog_size = 256M
+binlog_expire_logs_seconds = 259200
+slow_query_log = OFF
+general_log = OFF

@@ -1,0 +1,47 @@
+name: dcfs_mongodb
+
+services:
+  mongodb:
+    image: ${MONGODB_IMAGE}
+    container_name: dcfsMongoDb
+    hostname: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      TZ: ${TZ}
+    command:
+      - mongod
+      - --auth
+      - --bind_ip_all
+      - --wiredTigerCacheSizeGB
+      - "8"
+    ports:
+      - "${BIND_IP}:${MONGODB_PORT}:27017"
+    volumes:
+      - ${NVME_DATA_ROOT}/mongoDb/data:/data/db
+      - ${NVME_DATA_ROOT}/mongoDb/logs:/data/configdb
+      - ${HDD_DATA_ROOT}/mongoDb/backup:/backup
+    cpus: ${MONGODB_CPU_LIMIT}
+    mem_limit: ${MONGODB_MEMORY_LIMIT}
+    shm_size: 1gb
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --username \"$$MONGO_INITDB_ROOT_USERNAME\" --password \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval \"quit(db.adminCommand('ping').ok ? 0 : 2)\""]
+      interval: 10s
+      timeout: 8s
+      retries: 12
+      start_period: 30s
+    logging:
+      driver: local
+      options:
+        max-size: 20m
+        max-file: "5"
+        compress: "true"
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: dcfsDbMongoDb

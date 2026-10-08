@@ -1,0 +1,41 @@
+name: dcfs_mariadb
+
+services:
+  mariadb:
+    image: ${MARIADB_IMAGE}
+    container_name: dcfsMariaDb
+    hostname: mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_AUTO_UPGRADE: "0"
+      TZ: ${TZ}
+    ports:
+      - "${BIND_IP}:${MARIADB_PORT}:3306"
+    volumes:
+      - ${NVME_DATA_ROOT}/mariaDb/data:/var/lib/mysql
+      - ${HDD_DATA_ROOT}/mariaDb/backup:/backup
+      - ./config/50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf:ro
+    cpus: ${MARIADB_CPU_LIMIT}
+    mem_limit: ${MARIADB_MEMORY_LIMIT}
+    shm_size: 1gb
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    logging:
+      driver: local
+      options:
+        max-size: 20m
+        max-file: "5"
+        compress: "true"
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: dcfsDbMariaDb
