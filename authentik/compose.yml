@@ -1,0 +1,66 @@
+name: dcfs_authentik
+
+x-authentik-environment: &authentik-environment
+  AUTHENTIK_LISTEN__HTTP: "0.0.0.0:9000"
+  # 2026.8.3 rejects the documented empty value. Keep the unused TLS listener
+  # on container loopback only; it is neither exposed nor published.
+  AUTHENTIK_LISTEN__HTTPS: "127.0.0.1:9443"
+  AUTHENTIK_LISTEN__METRICS: "127.0.0.1:9300"
+  AUTHENTIK_LOG_LEVEL: info
+  AUTHENTIK_DISABLE_STARTUP_ANALYTICS: "true"
+  AUTHENTIK_DISABLE_UPDATE_CHECK: "true"
+  AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+
+x-authentik-service: &authentik-service
+  image: ${AUTHENTIK_IMAGE}
+  restart: unless-stopped
+  env_file:
+    - .env
+    - ../.authentik.env
+  environment: *authentik-environment
+  shm_size: 512mb
+  security_opt:
+    - no-new-privileges:true
+  volumes:
+    - ${AUTHENTIK_DATA_ROOT}/data:/data
+    - ./custom-templates:/templates:ro
+  logging:
+    driver: local
+    options:
+      max-size: 10m
+      max-file: "5"
+      compress: "true"
+
+services:
+  server:
+    <<: *authentik-service
+    container_name: dcfsAuthentikServer
+    hostname: authentik
+    command: server
+    cpus: ${AUTHENTIK_SERVER_CPU_LIMIT}
+    mem_limit: ${AUTHENTIK_SERVER_MEMORY_LIMIT}
+    expose:
+      - "9000"
+    networks:
+      frontend:
+        aliases:
+          - authentik
+      postgres: {}
+
+  worker:
+    <<: *authentik-service
+    container_name: dcfsAuthentikWorker
+    hostname: authentik-worker
+    command: worker
+    cpus: ${AUTHENTIK_WORKER_CPU_LIMIT}
+    mem_limit: ${AUTHENTIK_WORKER_MEMORY_LIMIT}
+    networks:
+      - postgres
+
+networks:
+  frontend:
+    name: dcfsAppAuthentik
+    internal: true
+  postgres:
+    name: dcfsDbPostgres
+    external: true

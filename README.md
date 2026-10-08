@@ -1,6 +1,6 @@
 # DCFS database platform
 
-This repository deploys six independent Docker Compose stacks on the remote workstation:
+This repository deploys six independent database/cache stacks and the internal Authentik identity stack on the remote workstation:
 
 | Stack | Version | Container endpoint | NVMe runtime data | HDD backup |
 | --- | --- | --- | --- | --- |
@@ -11,7 +11,9 @@ This repository deploys six independent Docker Compose stacks on the remote work
 | Valkey | 9.1.2 | `valkey:6379` on `dcfsCacheGeneral` | `/dataNvme/DockerData/valkey` | `/data/DockerData/valkey/backup` |
 | Valkey compatibility | 7.2.14 | `valkey72:6379` on `dcfsCacheValkey72` | `/dataNvme/DockerData/valkey72` | `/data/DockerData/valkey72/backup` |
 
-All image references include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. Runtime secrets live only in the root `.env`, mode `0600`, and are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data. Valkey 9 remains the default general-purpose instance; Valkey 7.2 is an isolated compatibility instance for applications whose supported matrix has not reached the current major release.
+All image references include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. Runtime secrets use stack-specific `.env` files with mode `0600` and are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data. Valkey 9 remains the default general-purpose instance; Valkey 7.2 is an isolated compatibility instance for applications whose supported matrix has not reached the current major release.
+
+Authentik 2026.8.3 reuses PostgreSQL 18.6 with a dedicated database and least-privilege role. Its HTTP endpoint is available only as `http://authentik:9000` on the internal `dcfsAppAuthentik` network. The unused TLS listener is restricted to container loopback, and no host port is published. The future Dashboard/reverse proxy can join this network without gaining access to the PostgreSQL network.
 
 Container output uses Docker's `local` logging driver with five 20 MiB segments per container and compression. SQL Server error logs are cycled daily, MariaDB slow/general logs are off by default, MariaDB binlogs expire after three days, and `check-all.sh` fails when either storage tier reaches 85% usage.
 
@@ -41,3 +43,5 @@ journalctl -u dcfs-workstation-update.service
 ## Network boundary
 
 Database ports are not published to the workstation. Every database network is marked `internal`, and only application containers explicitly attached to the matching network can connect. Do not add host port mappings for convenience.
+
+Authentik follows the same boundary: no host port is published. Its dedicated application network is also internal, ready for a future unified Dashboard/reverse proxy.

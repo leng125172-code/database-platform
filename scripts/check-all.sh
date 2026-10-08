@@ -18,4 +18,10 @@ for name in sqlServer postgres mariaDb mongoDb valkey valkey72; do
     failed=1
   fi
 done
+if [[ -x "$repo_root/authentik/scripts/check.sh" ]]; then
+  echo '== authentik =='
+  if ! "$repo_root/authentik/scripts/check.sh"; then
+    failed=1
+  fi
+fi
 exit "$failed"
