@@ -33,13 +33,15 @@ mongo_eval() {
 }
 
 cleanup() {
-  set +e
-  sql_query "IF DB_ID(N'dcfs_restore_test') IS NOT NULL BEGIN ALTER DATABASE [dcfs_restore_test] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [dcfs_restore_test]; END" >/dev/null 2>&1
-  docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" dcfsPostgres dropdb -h 127.0.0.1 -U postgres --if-exists dcfs_restore_test >/dev/null 2>&1
-  maria_query "DROP DATABASE IF EXISTS dcfs_restore_test;" >/dev/null 2>&1
-  mongo_eval "db.getSiblingDB('dcfs_restore_test').dropDatabase()" >/dev/null 2>&1
-  docker exec dcfsValkey valkey-cli --no-auth-warning -a "$VALKEY_PASSWORD" DEL dcfs:restore:test >/dev/null 2>&1
-  docker rm -f dcfsValkeyRestoreTest >/dev/null 2>&1
+  (
+    set +e
+    sql_query "IF DB_ID(N'dcfs_restore_test') IS NOT NULL BEGIN ALTER DATABASE [dcfs_restore_test] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [dcfs_restore_test]; END" >/dev/null 2>&1
+    docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" dcfsPostgres dropdb -h 127.0.0.1 -U postgres --if-exists dcfs_restore_test >/dev/null 2>&1
+    maria_query "DROP DATABASE IF EXISTS dcfs_restore_test;" >/dev/null 2>&1
+    mongo_eval "db.getSiblingDB('dcfs_restore_test').dropDatabase()" >/dev/null 2>&1
+    docker exec dcfsValkey valkey-cli --no-auth-warning -a "$VALKEY_PASSWORD" DEL dcfs:restore:test >/dev/null 2>&1
+    docker rm -f dcfsValkeyRestoreTest >/dev/null 2>&1
+  )
 }
 trap cleanup EXIT
 cleanup
@@ -102,4 +104,3 @@ done
 [[ $(docker exec dcfsValkeyRestoreTest valkey-cli GET dcfs:restore:test) == 42 ]]
 
 echo 'All five backup/restore validation scenarios passed.'
-
