@@ -20,10 +20,10 @@ docker run --rm \
     for name in sqlServer postgres mariaDb mongoDb valkey; do
       mkdir -p "/nvme/DockerData/$name/data" "/nvme/DockerData/$name/logs" "/hdd/DockerData/$name/backup"
     done
-    chown -R 10001:0 /nvme/DockerData/sqlServer /hdd/DockerData/sqlServer
-    chmod -R 0770 /nvme/DockerData/sqlServer /hdd/DockerData/sqlServer
-    chown 1000:10001 /hdd/DockerData/sqlServer/backup
-    chmod 0770 /hdd/DockerData/sqlServer/backup
+    chown -R 10001:0 /nvme/DockerData/sqlServer
+    chmod -R 0770 /nvme/DockerData/sqlServer
+    chown 1000:10001 /hdd/DockerData/sqlServer /hdd/DockerData/sqlServer/backup
+    chmod 0770 /hdd/DockerData/sqlServer /hdd/DockerData/sqlServer/backup
     for name in postgres mariaDb mongoDb valkey; do
       chown 1000:1000 "/hdd/DockerData/$name/backup"
       chmod 0770 "/hdd/DockerData/$name/backup"
