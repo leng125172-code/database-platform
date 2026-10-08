@@ -10,7 +10,7 @@ This repository deploys five independent Docker Compose stacks on the remote wor
 | MongoDB | 8.0.32 | `192.168.100.13:27017` | `/dataNvme/DockerData/mongoDb` | `/data/DockerData/mongoDb/backup` |
 | Valkey | 9.0.6 | `192.168.100.13:6379` | `/dataNvme/DockerData/valkey` | `/data/DockerData/valkey/backup` |
 
-All image references include an immutable digest. Runtime secrets live only in the root `.env`, mode `0600`, and are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data.
+All image references include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. Runtime secrets live only in the root `.env`, mode `0600`, and are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data.
 
 Container output uses Docker's `local` logging driver with five 20 MiB segments per container and compression. SQL Server error logs are cycled daily, MariaDB slow/general logs are off by default, MariaDB binlogs expire after three days, and `check-all.sh` fails when either storage tier reaches 85% usage.
 
