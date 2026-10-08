@@ -7,7 +7,7 @@ This repository deploys five independent Docker Compose stacks on the remote wor
 | SQL Server | 2025 CU9 | `192.168.100.13:1433` | `/dataNvme/DockerData/sqlServer` | `/data/DockerData/sqlServer/backup` |
 | PostgreSQL | 18.6 | `192.168.100.13:5432` | `/dataNvme/DockerData/postgres` | `/data/DockerData/postgres/backup` |
 | MariaDB | 11.8.9 LTS | `192.168.100.13:3306` | `/dataNvme/DockerData/mariaDb` | `/data/DockerData/mariaDb/backup` |
-| MongoDB | 9.0.2 | `192.168.100.13:27017` | `/dataNvme/DockerData/mongoDb` | `/data/DockerData/mongoDb/backup` |
+| MongoDB | 7.0.41 | `192.168.100.13:27017` | `/dataNvme/DockerData/mongoDb` | `/data/DockerData/mongoDb/backup` |
 | Valkey | 9.0.6 | `192.168.100.13:6379` | `/dataNvme/DockerData/valkey` | `/data/DockerData/valkey/backup` |
 
 All image references include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. Runtime secrets live only in the root `.env`, mode `0600`, and are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data.
