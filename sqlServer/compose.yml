@@ -1,9 +1,9 @@
-name: dcfs_sqlserver
+name: database-platform-sqlserver
 
 services:
   sqlserver:
     image: ${MSSQL_IMAGE}
-    container_name: dcfsSqlServer
+    container_name: database-platform-sqlserver
     hostname: sqlserver
     restart: unless-stopped
     environment:
@@ -38,5 +38,5 @@ services:
 
 networks:
   backend:
-    name: dcfsDbSqlServer
+    name: database-platform-db-sqlserver
     internal: true

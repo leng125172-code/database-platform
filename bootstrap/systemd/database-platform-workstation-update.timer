@@ -1,12 +1,12 @@
 [Unit]
-Description=Run DCFS workstation update every Sunday at 20:00
+Description=Run Database Platform workstation update every Sunday at 20:00
 
 [Timer]
 OnCalendar=Sun *-*-* 20:00:00
 Persistent=true
 AccuracySec=1min
 RandomizedDelaySec=0
-Unit=dcfs-workstation-update.service
+Unit=database-platform-workstation-update.service
 
 [Install]
 WantedBy=timers.target

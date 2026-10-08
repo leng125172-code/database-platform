@@ -1,9 +1,9 @@
-name: dcfs_valkey_7_2
+name: database-platform-valkey-7-2
 
 services:
   valkey72:
     image: ${VALKEY72_IMAGE}
-    container_name: dcfsValkey_7.2
+    container_name: database-platform-valkey72
     hostname: valkey72
     restart: unless-stopped
     environment:
@@ -39,5 +39,5 @@ services:
 
 networks:
   backend:
-    name: dcfsCacheValkey72
+    name: database-platform-cache-valkey72
     internal: true

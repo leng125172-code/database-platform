@@ -1,9 +1,9 @@
-name: dcfs_mongodb
+name: database-platform-mongodb
 
 services:
   mongodb:
     image: ${MONGODB_IMAGE}
-    container_name: dcfsMongoDb
+    container_name: database-platform-mongodb
     hostname: mongodb
     restart: unless-stopped
     environment:
@@ -42,5 +42,5 @@ services:
 
 networks:
   backend:
-    name: dcfsDbMongoDb
+    name: database-platform-db-mongodb
     internal: true

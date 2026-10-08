@@ -6,7 +6,7 @@ stamp=$(date +%Y%m%d_%H%M%S)
 backup_dir="$HDD_DATA_ROOT/sqlServer/backup"
 mkdir -p "$backup_dir"
 
-docker exec -i dcfsSqlServer bash -ec '
+docker exec -i database-platform-sqlserver bash -ec '
   tool=$(command -v sqlcmd || true)
   [[ -n "$tool" ]] || tool=/opt/mssql-tools18/bin/sqlcmd
   "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -b
@@ -30,7 +30,7 @@ CLOSE dbs;
 DEALLOCATE dbs;
 SQL
 
-docker exec -i dcfsSqlServer bash -ec '
+docker exec -i database-platform-sqlserver bash -ec '
   tool=$(command -v sqlcmd || true)
   [[ -n "$tool" ]] || tool=/opt/mssql-tools18/bin/sqlcmd
   "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "EXEC sys.sp_cycle_errorlog;" -b -o /dev/null

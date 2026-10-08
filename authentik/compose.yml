@@ -1,4 +1,4 @@
-name: dcfs_authentik
+name: database-platform-authentik
 
 x-authentik-environment: &authentik-environment
   AUTHENTIK_LISTEN__HTTP: "0.0.0.0:9000"
@@ -33,7 +33,7 @@ x-authentik-service: &authentik-service
 services:
   server:
     <<: *authentik-service
-    container_name: dcfsAuthentikServer
+    container_name: database-platform-authentik-server
     hostname: authentik
     command: server
     cpus: ${AUTHENTIK_SERVER_CPU_LIMIT}
@@ -48,7 +48,7 @@ services:
 
   worker:
     <<: *authentik-service
-    container_name: dcfsAuthentikWorker
+    container_name: database-platform-authentik-worker
     hostname: authentik-worker
     command: worker
     cpus: ${AUTHENTIK_WORKER_CPU_LIMIT}
@@ -58,8 +58,8 @@ services:
 
 networks:
   frontend:
-    name: dcfsAppAuthentik
+    name: database-platform-app-authentik
     internal: true
   postgres:
-    name: dcfsDbPostgres
+    name: database-platform-db-postgres
     external: true

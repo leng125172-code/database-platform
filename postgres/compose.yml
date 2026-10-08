@@ -1,9 +1,9 @@
-name: dcfs_postgres
+name: database-platform-postgres
 
 services:
   postgres:
     image: ${POSTGRES_IMAGE}
-    container_name: dcfsPostgres
+    container_name: database-platform-postgres
     hostname: postgres
     restart: unless-stopped
     environment:
@@ -62,5 +62,5 @@ services:
 
 networks:
   backend:
-    name: dcfsDbPostgres
+    name: database-platform-db-postgres
     internal: true

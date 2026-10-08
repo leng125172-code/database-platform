@@ -9,7 +9,7 @@ data_root=$(realpath "$NVME_DATA_ROOT/valkey/data")
 [[ "$backup" == "$backup_root"/* && -f "$backup" ]] || { echo "Backup must be a file under $backup_root" >&2; exit 2; }
 [[ "$data_root" == /dataNvme/DockerData/valkey/data ]] || { echo "Unexpected data path: $data_root" >&2; exit 2; }
 
-docker exec dcfsValkey valkey-check-rdb "/backup/$(basename "$backup")" >/dev/null
+docker exec database-platform-valkey valkey-check-rdb "/backup/$(basename "$backup")" >/dev/null
 compose down
 stamp=$(date +%Y%m%d_%H%M%S)
 docker run --rm --user 0 \

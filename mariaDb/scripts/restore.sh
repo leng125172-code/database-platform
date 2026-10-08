@@ -7,5 +7,5 @@ backup=$(realpath "$1")
 backup_root=$(realpath "$HDD_DATA_ROOT/mariaDb/backup")
 [[ "$backup" == "$backup_root"/* && -f "$backup" ]] || { echo "Backup must be a file under $backup_root" >&2; exit 2; }
 gzip -t "$backup"
-gunzip -c "$backup" | docker exec -i dcfsMariaDb mariadb -uroot -p"$MARIADB_ROOT_PASSWORD"
+gunzip -c "$backup" | docker exec -i database-platform-mariadb mariadb -uroot -p"$MARIADB_ROOT_PASSWORD"
 

@@ -10,7 +10,7 @@ database=$2
 [[ "$database" =~ ^[A-Za-z0-9_]+$ ]] || { echo "Unsafe database name" >&2; exit 2; }
 container_backup="/var/opt/mssql/backup/$(basename "$backup")"
 
-docker exec -i dcfsSqlServer bash -ec '
+docker exec -i database-platform-sqlserver bash -ec '
   tool=$(command -v sqlcmd || true)
   [[ -n "$tool" ]] || tool=/opt/mssql-tools18/bin/sqlcmd
   "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -b

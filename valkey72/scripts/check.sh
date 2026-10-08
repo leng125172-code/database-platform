@@ -2,6 +2,6 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/common.sh"
 load_env
-health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' 'dcfsValkey_7.2')
-[[ "$health" == healthy ]] || { echo "dcfsValkey_7.2: $health" >&2; exit 1; }
-docker exec 'dcfsValkey_7.2' valkey-cli --no-auth-warning -a "$VALKEY72_PASSWORD" INFO server | awk -F: '/^valkey_version:/ {gsub(/\r/, "", $2); print "Valkey compatibility " $2}'
+health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' 'database-platform-valkey72')
+[[ "$health" == healthy ]] || { echo "database-platform-valkey72: $health" >&2; exit 1; }
+docker exec 'database-platform-valkey72' valkey-cli --no-auth-warning -a "$VALKEY72_PASSWORD" INFO server | awk -F: '/^valkey_version:/ {gsub(/\r/, "", $2); print "Valkey compatibility " $2}'

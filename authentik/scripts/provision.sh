@@ -35,10 +35,10 @@ set +a
 [[ "${AUTHENTIK_POSTGRESQL__NAME}" == "authentik" ]] || { echo "Unexpected PostgreSQL database" >&2; exit 1; }
 [[ "${AUTHENTIK_POSTGRESQL__USER}" == "authentik" ]] || { echo "Unexpected PostgreSQL role" >&2; exit 1; }
 
-docker inspect dcfsPostgres >/dev/null 2>&1 || { echo "dcfsPostgres is not available" >&2; exit 1; }
+docker inspect database-platform-postgres >/dev/null 2>&1 || { echo "database-platform-postgres is not available" >&2; exit 1; }
 docker exec -i \
   -e PGPASSWORD="$POSTGRES_PASSWORD" \
-  dcfsPostgres \
+  database-platform-postgres \
   psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 \
     -v app_password="$AUTHENTIK_POSTGRESQL__PASSWORD" <<'SQL'
 SELECT format('CREATE ROLE authentik LOGIN PASSWORD %L', :'app_password')
@@ -53,7 +53,7 @@ SQL
 
 docker exec -i \
   -e PGPASSWORD="$POSTGRES_PASSWORD" \
-  dcfsPostgres \
+  database-platform-postgres \
   psql -h 127.0.0.1 -U postgres -d authentik -v ON_ERROR_STOP=1 <<'SQL'
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO authentik;

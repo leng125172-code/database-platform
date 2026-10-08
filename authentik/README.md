@@ -1,15 +1,15 @@
 # Authentik
 
-This stack runs Authentik 2026.8.3 as the internal identity provider. It reuses the existing PostgreSQL 18.6 service through `dcfsDbPostgres`; Authentik gets its own `authentik` database and non-superuser `authentik` role. Current Authentik releases use PostgreSQL for application data, sessions, and background task coordination, so this deployment does not use Valkey.
+This stack runs Authentik 2026.8.3 as the internal identity provider. It reuses the existing PostgreSQL 18.6 service through `database-platform-db-postgres`; Authentik gets its own `authentik` database and non-superuser `authentik` role. Current Authentik releases use PostgreSQL for application data, sessions, and background task coordination, so this deployment does not use Valkey.
 
 ## Network boundary
 
-- The server listens only on HTTP port `9000` inside `dcfsAppAuthentik`.
+- The server listens only on HTTP port `9000` inside `database-platform-app-authentik`.
 - HTTP is the only network-accessible listener. Authentik 2026.8.3 rejects its documented empty HTTPS-listener value, so the unused TLS listener is restricted to `127.0.0.1` inside the container and is neither exposed nor published.
 - No `ports` mapping exists, so the workstation and office LAN cannot connect directly.
-- The future Dashboard or reverse proxy must join `dcfsAppAuthentik` and use `http://authentik:9000` with HTTP/1.1/WebSocket support.
-- `dcfsAppAuthentik` is an internal Docker network. Authentik currently has no direct internet egress.
-- Only the Authentik server and worker join `dcfsDbPostgres`; the future Dashboard must not join the database network.
+- The future Dashboard or reverse proxy must join `database-platform-app-authentik` and use `http://authentik:9000` with HTTP/1.1/WebSocket support.
+- `database-platform-app-authentik` is an internal Docker network. Authentik currently has no direct internet egress.
+- Only the Authentik server and worker join `database-platform-db-postgres`; the future Dashboard must not join the database network.
 
 ## Secrets and storage
 
@@ -33,6 +33,6 @@ The worker intentionally does not mount `/var/run/docker.sock`. Automatic outpos
 
 The daily schedule runs `backup.sh --files-only` at 03:10 because PostgreSQL is already backed up at 01:30. Running `backup.sh` without that option performs both a fresh PostgreSQL backup set and an Authentik file archive for an on-demand coordinated recovery point.
 
-Initial setup remains reachable only after the Dashboard/reverse proxy joins `dcfsAppAuthentik`. Use `http://<dashboard-host>/if/flow/initial-setup/`; do not temporarily publish port 9000 from the Authentik container.
+Initial setup remains reachable only after the Dashboard/reverse proxy joins `database-platform-app-authentik`. Use `http://<dashboard-host>/if/flow/initial-setup/`; do not temporarily publish port 9000 from the Authentik container.
 
 The file restore script restores only `/data`. Database recovery must use the matching PostgreSQL dump as a coordinated operation before Authentik is started.

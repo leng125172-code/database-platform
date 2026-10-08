@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-exec 9>/run/lock/dcfs-workstation-update.lock
+exec 9>/run/lock/database-platform-workstation-update.lock
 if ! flock -n 9; then
   echo "Another workstation update is already running; exiting."
   exit 0

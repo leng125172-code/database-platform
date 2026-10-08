@@ -6,7 +6,7 @@ load_env
 backup=$(realpath "$1")
 backup_root=$(realpath "$HDD_DATA_ROOT/mongoDb/backup")
 [[ "$backup" == "$backup_root"/* && -f "$backup" ]] || { echo "Backup must be a file under $backup_root" >&2; exit 2; }
-docker exec dcfsMongoDb mongorestore \
+docker exec database-platform-mongodb mongorestore \
   --username "$MONGODB_ROOT_USERNAME" --password "$MONGODB_ROOT_PASSWORD" \
   --authenticationDatabase admin --archive="/backup/$(basename "$backup")" --gzip --drop
 

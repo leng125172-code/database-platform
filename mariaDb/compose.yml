@@ -1,9 +1,9 @@
-name: dcfs_mariadb
+name: database-platform-mariadb
 
 services:
   mariadb:
     image: ${MARIADB_IMAGE}
-    container_name: dcfsMariaDb
+    container_name: database-platform-mariadb
     hostname: mariadb
     restart: unless-stopped
     environment:
@@ -36,5 +36,5 @@ services:
 
 networks:
   backend:
-    name: dcfsDbMariaDb
+    name: database-platform-db-mariadb
     internal: true
