@@ -1,4 +1,4 @@
-# DCFS database platform
+# Database Platform
 
 This repository deploys six independent database/cache stacks and the internal Authentik identity stack on the remote workstation:
 
@@ -37,9 +37,9 @@ The example uses `MSSQL_PID=Developer`, which is licensed only for development a
 Run commands from any directory:
 
 ```bash
-/data/GitRepos/DCFS/scripts/check-all.sh
-/data/GitRepos/DCFS/postgres/scripts/backup.sh
-/data/GitRepos/DCFS/sqlServer/scripts/restore.sh /data/DockerData/sqlServer/backup/example.bak restored_database
+/data/GitRepos/database-platform/scripts/check-all.sh
+/data/GitRepos/database-platform/postgres/scripts/backup.sh
+/data/GitRepos/database-platform/sqlServer/scripts/restore.sh /data/DockerData/sqlServer/backup/example.bak restored_database
 ```
 
 Daily logical backups are installed in the `user` crontab. Local HDD backups are a recovery copy, not a disaster-recovery copy; add encrypted off-host replication before treating the service as production-ready.

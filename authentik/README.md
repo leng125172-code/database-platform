@@ -25,10 +25,10 @@ The worker intentionally does not mount `/var/run/docker.sock`. Automatic outpos
 ## Operations
 
 ```bash
-/data/GitRepos/DCFS/authentik/scripts/start.sh
-/data/GitRepos/DCFS/authentik/scripts/check.sh
-/data/GitRepos/DCFS/authentik/scripts/backup.sh
-/data/GitRepos/DCFS/authentik/scripts/stop.sh
+/data/GitRepos/database-platform/authentik/scripts/start.sh
+/data/GitRepos/database-platform/authentik/scripts/check.sh
+/data/GitRepos/database-platform/authentik/scripts/backup.sh
+/data/GitRepos/database-platform/authentik/scripts/stop.sh
 ```
 
 The daily schedule runs `backup.sh --files-only` at 03:10 because PostgreSQL is already backed up at 01:30. Running `backup.sh` without that option performs both a fresh PostgreSQL backup set and an Authentik file archive for an on-demand coordinated recovery point.
