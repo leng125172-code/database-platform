@@ -19,6 +19,7 @@ clean=$(printf '%s\n' "$current" | awk -v begin="$begin" -v end="$end" '
   printf "50 1 * * * /bin/bash -o pipefail -c '%s/mariaDb/scripts/backup.sh 2>&1 | logger -t dcfs-backup-mariadb'\n" "$repo_root"
   printf "10 2 * * * /bin/bash -o pipefail -c '%s/mongoDb/scripts/backup.sh 2>&1 | logger -t dcfs-backup-mongodb'\n" "$repo_root"
   printf "30 2 * * * /bin/bash -o pipefail -c '%s/valkey/scripts/backup.sh 2>&1 | logger -t dcfs-backup-valkey'\n" "$repo_root"
+  printf "50 2 * * * /bin/bash -o pipefail -c '%s/valkey72/scripts/backup.sh 2>&1 | logger -t dcfs-backup-valkey72'\n" "$repo_root"
   printf '%s\n' "$end"
 } | crontab -
 

@@ -12,7 +12,7 @@ for path in /dataNvme /data; do
     failed=1
   fi
 done
-for name in sqlServer postgres mariaDb mongoDb valkey; do
+for name in sqlServer postgres mariaDb mongoDb valkey valkey72; do
   echo "== $name =="
   if ! "$repo_root/$name/scripts/check.sh"; then
     failed=1

@@ -27,5 +27,5 @@ prune_old_backups() {
   local backup_dir=$1
   local retention_days=$2
   find "$backup_dir" -type f -mtime "+$retention_days" -delete
+  find "$backup_dir" -depth -mindepth 1 -type d -empty -mtime "+$retention_days" -delete
 }
-
