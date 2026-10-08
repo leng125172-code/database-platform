@@ -16,7 +16,7 @@ Container output uses Docker's `local` logging driver with five 20 MiB segments 
 
 ## Important license note
 
-SQL Server uses `MSSQL_PID=Developer` by default. Developer edition is licensed only for development and testing. Before production use, set `MSSQL_PID` to `Express` or to a valid licensed edition/product key and review Microsoft's container support policy.
+The example uses `MSSQL_PID=Developer`, which is licensed only for development and testing. This workstation's private `.env` contains the supplied enterprise product key, and the running instance has been verified as Enterprise Edition; the key is not stored in Git or documentation.
 
 ## Operations
 
