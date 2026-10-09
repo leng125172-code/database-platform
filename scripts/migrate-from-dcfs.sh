@@ -115,6 +115,8 @@ while IFS= read -r sql_backup; do
 done < <(docker exec dcfsSqlServer sh -ec "find /var/opt/mssql/backup -maxdepth 1 -type f -name 'dcfs_migration_*_${stamp}.bak' -print")
 docker exec dcfsValkey sh -ec 'valkey-cli --no-auth-warning -a "$VALKEY_PASSWORD" --rdb /backup/dcfs_migration_valkey.rdb >/dev/null'
 docker exec dcfsValkey_7.2 sh -ec 'valkey-cli --no-auth-warning -a "$VALKEY_PASSWORD" --rdb /backup/dcfs_migration_valkey72.rdb >/dev/null'
+docker cp dcfsValkey:/backup/dcfs_migration_valkey.rdb "$backup_root/valkey.rdb" >/dev/null
+docker cp dcfsValkey_7.2:/backup/dcfs_migration_valkey72.rdb "$backup_root/valkey72.rdb" >/dev/null
 docker exec dcfsAuthentikServer sh -ec "tar -C /data -czf /tmp/authentik-files-$stamp.tar.gz ."
 docker cp "dcfsAuthentikServer:/tmp/authentik-files-$stamp.tar.gz" "$backup_root/authentik-files.tar.gz" >/dev/null
 docker exec dcfsAuthentikServer rm -f "/tmp/authentik-files-$stamp.tar.gz"
@@ -123,10 +125,6 @@ docker exec dcfsAuthentikServer rm -f "/tmp/authentik-files-$stamp.tar.gz"
   find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
   sha256sum --check --quiet SHA256SUMS
 )
-
-echo 'Stopping legacy containers while preserving them for rollback...'
-docker stop dcfsAuthentikWorker dcfsAuthentikServer
-docker stop dcfsValkey_7.2 dcfsValkey dcfsMongoDb dcfsMariaDb dcfsSqlServer dcfsPostgres
 
 rollback_on_error() {
   local exit_code=$?
@@ -137,6 +135,10 @@ rollback_on_error() {
   exit "$exit_code"
 }
 trap rollback_on_error ERR
+
+echo 'Stopping legacy containers while preserving them for rollback...'
+docker stop dcfsAuthentikWorker dcfsAuthentikServer
+docker stop dcfsValkey_7.2 dcfsValkey dcfsMongoDb dcfsMariaDb dcfsSqlServer dcfsPostgres
 
 echo 'Starting renamed database-platform stacks...'
 start_stack postgres

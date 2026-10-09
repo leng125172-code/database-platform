@@ -12,6 +12,13 @@ for directory in "${new_directories[@]}"; do
   fi
 done
 
+for name in database-platform-postgres database-platform-mariadb database-platform-mongodb database-platform-sqlserver database-platform-valkey database-platform-valkey72 database-platform-authentik-server database-platform-authentik-worker; do
+  if [[ $(docker inspect --format '{{.State.Running}}' "$name" 2>/dev/null || true) == true ]]; then
+    echo "Rollback refused: $name is still running; do not start the old container on the same data mount." >&2
+    exit 1
+  fi
+done
+
 for name in "${legacy_data[@]}"; do
   docker inspect "$name" >/dev/null 2>&1 || { echo "Legacy rollback container missing: $name" >&2; exit 1; }
 done

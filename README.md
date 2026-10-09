@@ -36,6 +36,8 @@ The example uses `MSSQL_PID=Developer`, which is licensed only for development a
 
 ## Operations
 
+For installation or resuming a partially completed installation, run `sudo ./bootstrap/install-dependencies.sh`. It preserves private environment files, creates missing Whale Deck credentials, checks for foreign containers holding the same data mounts, then starts every dependency. Legacy migrations remain an explicit separate workflow. The Whale Deck repository's `install.sh` calls this entry point after checking packages and Docker.
+
 Run commands from any directory:
 
 ```bash

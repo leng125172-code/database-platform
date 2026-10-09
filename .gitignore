@@ -12,3 +12,4 @@ secrets/
 **/*.swo
 **/*~
 .DS_Store
+.migration-state/
