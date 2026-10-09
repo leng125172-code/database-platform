@@ -83,7 +83,7 @@ printf '%s\n' "$backup_root" > "$state_dir/latest-backup"
 docker ps --format '{{.Names}}|{{.Image}}|{{.Status}}' > "$backup_root/containers-before.txt"
 
 echo 'Creating migration safety backups...'
-docker exec -u postgres dcfsPostgres pg_dumpall -d postgres > "$backup_root/postgres-all.sql"
+docker exec -u postgres dcfsPostgres pg_dumpall > "$backup_root/postgres-all.sql"
 docker exec dcfsMariaDb sh -ec 'exec mariadb-dump --all-databases --single-transaction --quick --lock-tables=false -uroot -p"$MARIADB_ROOT_PASSWORD"' \
   > "$backup_root/mariadb-all.sql"
 docker exec dcfsMongoDb sh -ec 'exec mongodump --quiet --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --archive --gzip' \
