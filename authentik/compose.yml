@@ -36,6 +36,10 @@ services:
     container_name: database-platform-authentik-server
     hostname: authentik
     command: server
+    labels:
+      io.whaledeck.resource-id: database-platform.authentik.server
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: IdentityCore
     cpus: ${AUTHENTIK_SERVER_CPU_LIMIT}
     mem_limit: ${AUTHENTIK_SERVER_MEMORY_LIMIT}
     expose:
@@ -51,6 +55,10 @@ services:
     container_name: database-platform-authentik-worker
     hostname: authentik-worker
     command: worker
+    labels:
+      io.whaledeck.resource-id: database-platform.authentik.worker
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: IdentityCore
     cpus: ${AUTHENTIK_WORKER_CPU_LIMIT}
     mem_limit: ${AUTHENTIK_WORKER_MEMORY_LIMIT}
     networks:

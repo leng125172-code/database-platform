@@ -6,13 +6,17 @@ services:
     container_name: database-platform-valkey
     hostname: valkey
     restart: unless-stopped
+    labels:
+      io.whaledeck.resource-id: database-platform.valkey
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: CriticalData
     environment:
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       TZ: ${TZ}
     command:
       - /bin/sh
       - -ec
-      - exec valkey-server --bind 0.0.0.0 --protected-mode yes --requirepass "$$VALKEY_PASSWORD" --appendonly yes --appendfsync everysec --aof-use-rdb-preamble yes --auto-aof-rewrite-percentage 100 --auto-aof-rewrite-min-size 64mb --save 900 1 --save 300 10 --maxmemory "${VALKEY_MAXMEMORY}" --maxmemory-policy noeviction
+      - touch /data/users.acl && chmod 0600 /data/users.acl && exec valkey-server --bind 0.0.0.0 --protected-mode yes --requirepass "$$VALKEY_PASSWORD" --aclfile /data/users.acl --appendonly yes --appendfsync everysec --aof-use-rdb-preamble yes --auto-aof-rewrite-percentage 100 --auto-aof-rewrite-min-size 64mb --save 900 1 --save 300 10 --maxmemory "${VALKEY_MAXMEMORY}" --maxmemory-policy noeviction
     volumes:
       - ${NVME_DATA_ROOT}/valkey/data:/data
       - ${HDD_DATA_ROOT}/valkey/backup:/backup

@@ -36,6 +36,17 @@ for variable in "${required_images[@]}"; do
     || { echo "Missing $variable in $images_env" >&2; exit 1; }
 done
 
+required_runtime=(
+  POSTGRES_PASSWORD
+  WHALEDECK_POSTGRES_PASSWORD
+  VALKEY_PASSWORD
+  WHALEDECK_VALKEY_PASSWORD
+)
+for variable in "${required_runtime[@]}"; do
+  grep -Eq "^[[:space:]]*${variable}[[:space:]]*=" "$cluster_env" \
+    || { echo "Missing $variable in $cluster_env" >&2; exit 1; }
+done
+
 required_authentik=(
   AUTHENTIK_SECRET_KEY
   AUTHENTIK_POSTGRESQL__HOST

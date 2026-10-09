@@ -13,6 +13,8 @@ This repository deploys six independent database/cache stacks and the internal A
 
 All image references are centralized in the repository-root `.images.env` and include an immutable digest. SQL Server uses the workstation's existing MCR accelerator while retaining Microsoft's original manifest digest; Docker Official Images use the daemon's configured Docker Hub mirror. The root `.env` contains database/cache runtime settings and secrets, while `authentik/.env` contains all Authentik runtime settings and its dedicated PostgreSQL credentials. Real environment files are ignored by Git. Each stack has its own network, health check, resource limit, start/stop/check/backup/restore scripts, and explicit bind mounts. No anonymous volume contains production data. Valkey 9 remains the default general-purpose instance; Valkey 7.2 is an isolated compatibility instance for applications whose supported matrix has not reached the current major release.
 
+`bootstrap/bootstrap-whaledeck.sh` idempotently creates the least-privilege `whaledeck` PostgreSQL role/database and the Valkey 9 `whaledeck` ACL user. Generated credentials remain only in the root private `.env` (mode `0600`); the cache identity is restricted to `whaledeck:*` keys and cannot call configuration, ACL, or shutdown commands.
+
 Authentik 2026.8.3 reuses PostgreSQL 18.6 with a dedicated database and least-privilege role. Its HTTP endpoint is available only as `http://authentik:9000` on the internal `database-platform-app-authentik` network. The unused TLS listener is restricted to container loopback, and no host port is published. The future Dashboard/reverse proxy can join this network without gaining access to the PostgreSQL network.
 
 ## Environment files
@@ -50,6 +52,18 @@ The workstation installs normal operating-system package upgrades every Sunday a
 systemctl list-timers database-platform-workstation-update.timer
 journalctl -u database-platform-workstation-update.service
 ```
+
+### One-time migration from legacy `dcfs*` runtime names
+
+The migration keeps the old containers stopped for rollback and reuses the existing bind-mounted data. It never runs old and new database containers against the same data directory at the same time.
+
+```bash
+./scripts/migrate-from-dcfs.sh
+sudo ./bootstrap/install-workstation-update-systemd.sh
+./scripts/check-all.sh
+```
+
+If validation fails, run `./scripts/rollback-to-dcfs.sh`. Only after Whale Deck acceptance, remove the stopped legacy container objects with `./scripts/finalize-dcfs-migration.sh --confirm`; bind-mounted NVMe/HDD data is not removed.
 
 ## Network boundary
 

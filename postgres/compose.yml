@@ -6,6 +6,10 @@ services:
     container_name: database-platform-postgres
     hostname: postgres
     restart: unless-stopped
+    labels:
+      io.whaledeck.resource-id: database-platform.postgres
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: CriticalData
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

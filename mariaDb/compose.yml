@@ -6,6 +6,10 @@ services:
     container_name: database-platform-mariadb
     hostname: mariadb
     restart: unless-stopped
+    labels:
+      io.whaledeck.resource-id: database-platform.mariadb
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: CriticalData
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_AUTO_UPGRADE: "0"

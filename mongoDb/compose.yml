@@ -6,6 +6,10 @@ services:
     container_name: database-platform-mongodb
     hostname: mongodb
     restart: unless-stopped
+    labels:
+      io.whaledeck.resource-id: database-platform.mongodb
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: CriticalData
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}

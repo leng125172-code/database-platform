@@ -6,6 +6,10 @@ services:
     container_name: database-platform-valkey72
     hostname: valkey72
     restart: unless-stopped
+    labels:
+      io.whaledeck.resource-id: database-platform.valkey72
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: CriticalData
     environment:
       VALKEY_PASSWORD: ${VALKEY72_PASSWORD}
       TZ: ${TZ}

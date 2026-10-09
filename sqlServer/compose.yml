@@ -6,6 +6,10 @@ services:
     container_name: database-platform-sqlserver
     hostname: sqlserver
     restart: unless-stopped
+    labels:
+      io.whaledeck.resource-id: database-platform.sqlserver
+      io.whaledeck.protected: "true"
+      io.whaledeck.protection-level: CriticalData
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_PID: ${MSSQL_PID}
