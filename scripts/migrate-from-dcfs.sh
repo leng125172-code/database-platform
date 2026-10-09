@@ -88,23 +88,26 @@ docker exec dcfsMariaDb sh -ec 'exec mariadb-dump --all-databases --single-trans
   > "$backup_root/mariadb-all.sql"
 docker exec dcfsMongoDb sh -ec 'exec mongodump --quiet --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --archive --gzip' \
   > "$backup_root/mongodb.archive.gz"
-docker exec -e MIGRATION_STAMP="$stamp" dcfsSqlServer sh -ec '
+sql_backup_query=$(cat <<SQL
+DECLARE @name sysname, @path nvarchar(4000), @sql nvarchar(max);
+DECLARE databases CURSOR LOCAL FAST_FORWARD FOR
+  SELECT name FROM sys.databases WHERE state_desc = N'ONLINE' AND name <> N'tempdb';
+OPEN databases; FETCH NEXT FROM databases INTO @name;
+WHILE @@FETCH_STATUS = 0 BEGIN
+  SET @path = N'/var/opt/mssql/backup/dcfs_migration_' +
+    REPLACE(REPLACE(@name, N'/', N'_'), N'\', N'_') + N'_${stamp}.bak';
+  SET @sql = N'BACKUP DATABASE ' + QUOTENAME(@name) + N' TO DISK = ' +
+    QUOTENAME(@path, '''') + N' WITH COPY_ONLY, INIT, CHECKSUM';
+  EXEC sys.sp_executesql @sql;
+  FETCH NEXT FROM databases INTO @name;
+END
+CLOSE databases; DEALLOCATE databases;
+SQL
+)
+docker exec -e MIGRATION_QUERY="$sql_backup_query" dcfsSqlServer sh -ec '
   tool=$(command -v sqlcmd || true)
   [ -n "$tool" ] || tool=/opt/mssql-tools18/bin/sqlcmd
-  "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -b -Q "
-    DECLARE @name sysname, @path nvarchar(4000), @sql nvarchar(max);
-    DECLARE databases CURSOR LOCAL FAST_FORWARD FOR
-      SELECT name FROM sys.databases WHERE state_desc = N'ONLINE' AND name <> N'tempdb';
-    OPEN databases; FETCH NEXT FROM databases INTO @name;
-    WHILE @@FETCH_STATUS = 0 BEGIN
-      SET @path = N'/var/opt/mssql/backup/dcfs_migration_' +
-        REPLACE(REPLACE(@name, N'/', N'_'), N'\\', N'_') + N'_' + N'$MIGRATION_STAMP' + N'.bak';
-      SET @sql = N'BACKUP DATABASE ' + QUOTENAME(@name) + N' TO DISK = ' +
-        QUOTENAME(@path, '''') + N' WITH COPY_ONLY, INIT, CHECKSUM';
-      EXEC sys.sp_executesql @sql;
-      FETCH NEXT FROM databases INTO @name;
-    END
-    CLOSE databases; DEALLOCATE databases;"
+  "$tool" -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -b -Q "$MIGRATION_QUERY"
 '
 mkdir -p "$backup_root/sqlserver"
 while IFS= read -r sql_backup; do
