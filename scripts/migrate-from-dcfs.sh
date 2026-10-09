@@ -115,7 +115,11 @@ docker exec dcfsValkey_7.2 sh -ec 'valkey-cli --no-auth-warning -a "$VALKEY_PASS
 docker exec dcfsAuthentikServer sh -ec "tar -C /data -czf /tmp/authentik-files-$stamp.tar.gz ."
 docker cp "dcfsAuthentikServer:/tmp/authentik-files-$stamp.tar.gz" "$backup_root/authentik-files.tar.gz" >/dev/null
 docker exec dcfsAuthentikServer rm -f "/tmp/authentik-files-$stamp.tar.gz"
-find "$backup_root" -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum > "$backup_root/SHA256SUMS"
+(
+  cd "$backup_root"
+  find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+  sha256sum --check --quiet SHA256SUMS
+)
 
 echo 'Stopping legacy containers while preserving them for rollback...'
 docker stop dcfsAuthentikWorker dcfsAuthentikServer
