@@ -15,7 +15,7 @@ set +a
 : "${WHALEDECK_VALKEY_PASSWORD:?WHALEDECK_VALKEY_PASSWORD is required}"
 : "${VALKEY_PASSWORD:?VALKEY_PASSWORD is required}"
 
-docker exec -i \
+docker exec -i -u postgres \
   -e PGPASSWORD="$POSTGRES_PASSWORD" \
   -e WHALEDECK_POSTGRES_PASSWORD="$WHALEDECK_POSTGRES_PASSWORD" \
   database-platform-postgres psql --username postgres --dbname postgres \
