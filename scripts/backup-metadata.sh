@@ -8,9 +8,16 @@ case "$engine" in
 esac
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+env_file="$repo_root/.env"
+images_env="$repo_root/.images.env"
+[[ -r "$images_env" ]] || { echo "Missing $images_env" >&2; exit 1; }
+[[ -r "$env_file" ]] || { echo "Missing $env_file" >&2; exit 1; }
+set -a
 # shellcheck disable=SC1090
-source "$repo_root/scripts/common.sh"
-load_env
+. "$images_env"
+# shellcheck disable=SC1090
+. "$env_file"
+set +a
 backup_dir="$HDD_DATA_ROOT/$engine/backup"
 latest_generation=$(
   find "$backup_dir" -maxdepth 1 -type f ! -name '*.partial*' -printf '%f\n' |
