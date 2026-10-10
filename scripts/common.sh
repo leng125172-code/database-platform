@@ -32,4 +32,17 @@ prune_old_backups() {
   local retention_days=$2
   find "$backup_dir" -type f -mtime "+$retention_days" -delete
   find "$backup_dir" -depth -mindepth 1 -type d -empty -mtime "+$retention_days" -delete
+
+  local retention_count=${BACKUP_RETENTION_COUNT:-0}
+  [[ "$retention_count" =~ ^[0-9]+$ ]] || { echo 'BACKUP_RETENTION_COUNT must be an integer.' >&2; return 2; }
+  (( retention_count > 0 )) || return 0
+  mapfile -t generations < <(
+    find "$backup_dir" -maxdepth 1 -type f ! -name '*.partial*' -printf '%f\n' |
+      sed -nE 's/.*_([0-9]{8}_[0-9]{6})\..*/\1/p' |
+      sort -r -u
+  )
+  local generation
+  for generation in "${generations[@]:retention_count}"; do
+    find "$backup_dir" -maxdepth 1 -type f -name "*_${generation}.*" -delete
+  done
 }
