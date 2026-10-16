@@ -38,6 +38,8 @@ The example uses `MSSQL_PID=Developer`, which is licensed only for development a
 
 For installation or resuming a partially completed installation, run `sudo ./bootstrap/install-dependencies.sh`. It preserves private environment files, creates missing Whale Deck credentials, checks for foreign containers holding the same data mounts, then starts every dependency. Legacy migrations remain an explicit separate workflow. The Whale Deck repository's `install.sh` calls this entry point after checking packages and Docker.
 
+The installer also adds a root-owned Docker systemd drop-in with `RequiresMountsFor` for this configuration checkout, NVMe runtime data and HDD backups. It refuses an unavailable `/data` HDD mount and does not restart Docker. Existing hosts can run `sudo bash ./bootstrap/install-docker-storage-dependencies.sh` separately; `--print` displays only the non-secret generated unit configuration. This prevents Docker from starting before its bind-mount storage on a subsequent boot. MariaDB's configuration-file bind additionally uses `create_host_path: false`, so a missing file is rejected rather than replaced with an empty directory. A verified dependency graph is not proof of a completed reboot drill.
+
 Run commands from any directory:
 
 ```bash

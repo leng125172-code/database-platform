@@ -13,3 +13,4 @@ secrets/
 **/*~
 .DS_Store
 .migration-state/
+.project-atlas/

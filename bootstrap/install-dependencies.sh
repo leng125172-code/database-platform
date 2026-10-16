@@ -35,6 +35,10 @@ for key in WHALEDECK_POSTGRES_PASSWORD WHALEDECK_VALKEY_PASSWORD; do
 done
 chmod 0600 "$repo_root/.env"
 
+# Docker auto-restarts existing containers before this installer is invoked.
+# Ensure future boots cannot bind an unmounted HDD path into a database.
+bash "$repo_root/bootstrap/install-docker-storage-dependencies.sh"
+
 # Fresh SQL Server directories need its unprivileged UID before the first boot.
 # Do not recursively change the ownership of pre-existing database files.
 for name in sqlServer postgres mariaDb mongoDb valkey valkey72; do

@@ -1,0 +1,11 @@
+services:
+  config-check:
+    image: ${VALIDATION_IMAGE:?}
+    network_mode: none
+    volumes:
+      - type: bind
+        source: ./config/missing.cnf
+        target: /tmp/validation-config.cnf
+        read_only: true
+        bind:
+          create_host_path: false

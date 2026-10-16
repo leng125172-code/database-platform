@@ -17,7 +17,12 @@ services:
     volumes:
       - ${NVME_DATA_ROOT}/mariaDb/data:/var/lib/mysql
       - ${HDD_DATA_ROOT}/mariaDb/backup:/backup
-      - ./config/50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf:ro
+      - type: bind
+        source: ./config/50-server.cnf
+        target: /etc/mysql/mariadb.conf.d/50-server.cnf
+        read_only: true
+        bind:
+          create_host_path: false
     cpus: ${MARIADB_CPU_LIMIT}
     mem_limit: ${MARIADB_MEMORY_LIMIT}
     shm_size: 1gb
