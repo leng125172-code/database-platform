@@ -36,7 +36,7 @@ docker exec -e VALKEY_PASSWORD="$VALKEY_PASSWORD" -e WHALEDECK_VALKEY_PASSWORD="
     test "$(admin ACL DRYRUN whaledeck HSET whaledeck:validation:probe revision 1)" = OK
     test "$(admin ACL DRYRUN whaledeck HINCRBY whaledeck:validation:probe revision 1)" = OK
     test "$(admin ACL DRYRUN whaledeck PEXPIREAT whaledeck:validation:probe 1)" = OK
-    test "$(admin ACL DRYRUN whaledeck EVAL \"return 1\" 0)" = OK
+    test "$(admin ACL DRYRUN whaledeck EVAL "return 1" 0)" = OK
     for verb in FLUSHALL FLUSHDB SHUTDOWN; do
       test "$(admin ACL DRYRUN whaledeck "$verb")" != OK
     done
