@@ -36,7 +36,7 @@ docker exec \
   database-platform-valkey sh -ec '
     valkey-cli --no-auth-warning -a "$VALKEY_PASSWORD" ACL SETUSER whaledeck \
       reset on ">${WHALEDECK_VALKEY_PASSWORD}" "~whaledeck:*" \
-      +@read +@write +@connection +@scripting -@dangerous -config -shutdown -acl >/dev/null
+      +@read +@write +@connection +@scripting -@dangerous -config -shutdown -acl +time >/dev/null
     valkey-cli --no-auth-warning -a "$VALKEY_PASSWORD" ACL SAVE >/dev/null
   '
 

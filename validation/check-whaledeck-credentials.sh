@@ -26,6 +26,17 @@ docker exec -e VALKEY_PASSWORD="$VALKEY_PASSWORD" -e WHALEDECK_VALKEY_PASSWORD="
     test "$(valkey-cli --raw --no-auth-warning --user whaledeck -a "$WHALEDECK_VALKEY_PASSWORD" PING)" = PONG
     test "$(admin ACL DRYRUN whaledeck SET whaledeck:validation:probe value EX 30)" = OK
     test "$(admin ACL DRYRUN whaledeck GET whaledeck:validation:probe)" = OK
+    # Session Lua uses Valkey server time, rather than a caller-controlled clock.
+    # TIME is outside read/write/connection/scripting categories on Valkey 9.
+    test "$(admin ACL DRYRUN whaledeck TIME)" = OK
+    test "$(admin ACL DRYRUN whaledeck TYPE whaledeck:validation:probe)" = OK
+    test "$(admin ACL DRYRUN whaledeck PTTL whaledeck:validation:probe)" = OK
+    test "$(admin ACL DRYRUN whaledeck HMGET whaledeck:validation:probe subject expires revision)" = OK
+    test "$(admin ACL DRYRUN whaledeck HSTRLEN whaledeck:validation:probe ticket)" = OK
+    test "$(admin ACL DRYRUN whaledeck HSET whaledeck:validation:probe revision 1)" = OK
+    test "$(admin ACL DRYRUN whaledeck HINCRBY whaledeck:validation:probe revision 1)" = OK
+    test "$(admin ACL DRYRUN whaledeck PEXPIREAT whaledeck:validation:probe 1)" = OK
+    test "$(admin ACL DRYRUN whaledeck EVAL \"return 1\" 0)" = OK
     for verb in FLUSHALL FLUSHDB SHUTDOWN; do
       test "$(admin ACL DRYRUN whaledeck "$verb")" != OK
     done

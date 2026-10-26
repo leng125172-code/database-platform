@@ -15,6 +15,8 @@ All image references are centralized in the repository-root `.images.env` and in
 
 `bootstrap/bootstrap-whaledeck.sh` idempotently creates the least-privilege `whaledeck` PostgreSQL role/database and the Valkey 9 `whaledeck` ACL user. Generated credentials remain only in the root private `.env` (mode `0600`); the cache identity is restricted to `whaledeck:*` keys and cannot call configuration, ACL, or shutdown commands.
 
+The cache ACL explicitly grants `TIME` for the BFF session Lua scripts. Read/write/connection/scripting categories alone do not include this command on Valkey 9. `validation/check-whaledeck-credentials.sh` checks this permission and the session hash/TTL commands alongside denial of configuration, ACL, shutdown, flush and foreign-key access; no application data is written by that validation.
+
 Authentik 2026.8.3 reuses PostgreSQL 18.6 with a dedicated database and least-privilege role. Its HTTP endpoint is available only as `http://authentik:9000` on the internal `database-platform-app-authentik` network. The unused TLS listener is restricted to container loopback, and no host port is published. The future Dashboard/reverse proxy can join this network without gaining access to the PostgreSQL network.
 
 ## Environment files
