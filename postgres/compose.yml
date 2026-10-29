@@ -50,7 +50,9 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      # Local sockets use peer authentication. Run the probe as the database
+      # OS user so readiness checks do not emit a FATAL every ten seconds.
+      test: ["CMD", "gosu", "postgres", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 12
