@@ -6,7 +6,9 @@ x-authentik-environment: &authentik-environment
   # on container loopback only; it is neither exposed nor published.
   AUTHENTIK_LISTEN__HTTPS: "127.0.0.1:9443"
   AUTHENTIK_LISTEN__METRICS: "127.0.0.1:9300"
-  AUTHENTIK_LOG_LEVEL: info
+  # INFO access URLs include OIDC logout hints and signed media URLs.
+  # Keep operational warnings/errors; identity audit events remain in PostgreSQL.
+  AUTHENTIK_LOG_LEVEL: warning
   AUTHENTIK_DISABLE_STARTUP_ANALYTICS: "true"
   AUTHENTIK_DISABLE_UPDATE_CHECK: "true"
   AUTHENTIK_ERROR_REPORTING__ENABLED: "false"

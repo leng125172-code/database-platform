@@ -1,5 +1,7 @@
 # Authentik
 
+Authentik defaults to `AUTHENTIK_LOG_LEVEL=warning`. Its INFO access events contain full URLs, including OIDC logout ID-token hints and signed media URLs; Docker log rotation alone does not remove that content. Warnings/errors stay available and identity audit events remain in PostgreSQL. Do not enable INFO/DEBUG on the shared service for routine diagnostics. See [log privacy validation](../docs/qa/AUTHENTIK_LOG_PRIVACY.md).
+
 This stack runs Authentik 2026.8.3 as the internal identity provider. It reuses the existing PostgreSQL 18.6 service through `database-platform-db-postgres`; Authentik gets its own `authentik` database and non-superuser `authentik` role. Current Authentik releases use PostgreSQL for application data, sessions, and background task coordination, so this deployment does not use Valkey.
 
 ## Network boundary
